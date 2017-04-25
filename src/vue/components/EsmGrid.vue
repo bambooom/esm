@@ -70,7 +70,7 @@
         if (this.pageInfo.rowCount === -1) {
           return null;
         } else {
-          let {start, end} = this.getPageIndex();
+          let {start, end} = this.getPageInfo();
           return `${start + 1} - ${end + 1} / ${this.pageInfo.rowCount}`;
         }
       },
@@ -121,6 +121,14 @@
     },
 
     methods: {
+      refresh({page = null} = {}) {
+        if (page !== null) {
+          this.pageInfo.page = page;
+        }
+
+        this.loadData();
+      },
+
       goPage(page) {
         if (this.pageInfo.page === page) {
           return;
@@ -145,12 +153,12 @@
       },
 
       loadData() {
-        let {start, end} = this.getPageIndex();
+        let {start, end, page, pageSize} = this.getPageInfo();
 
-        this.dataSource.setViewportRange(start, end);
+        this.dataSource.setViewportRange(start, end, {start, end, page, pageSize});
       },
 
-      getPageIndex() {
+      getPageInfo() {
         let {pageSize} = this;
         let {page} = this.pageInfo;
 
@@ -160,6 +168,8 @@
         return {
           start,
           end,
+          pageSize,
+          page,
         };
 
       },
