@@ -17,8 +17,8 @@ class AsyncDataSource {
     // TODO: destroy
   }
 
-  setViewportRange(first, last) {
-    this.getFn({first, last})
+  setViewportRange(first, last, opt) {
+    this.getFn({first, last}, opt)
       .then(({meta, data}) => {
         this.params.setRowCount(meta.count);
         this.params.setRowData(data);
