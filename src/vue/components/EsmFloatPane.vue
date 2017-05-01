@@ -38,6 +38,7 @@
           top: `${rIndex * 44 - 4}px`,
         };
       },
+
       getPaneTabClass(pene, index) {
         let rIndex = this.paneCount - 1 - index;
 
@@ -62,6 +63,10 @@
         this.dfds.push(dfd);
 
         return dfd.promise;
+      },
+
+      filter(fn) {
+        return this.panes.filter(fn);
       },
 
       // 这个接口主要是内部使用，所以不怕传错 index
