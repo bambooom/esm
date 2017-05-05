@@ -149,6 +149,7 @@
     padding: 20px;
     box-sizing: border-box;
     background-color: white;
+    overflow-y: auto;
 
     @media (max-width: 950px) {
       min-width: 80%;
