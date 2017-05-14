@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    VueForm(:schema="schema", :model="model", :options="options", :class="vfgClasses")
+    VueForm(ref="vfg", :schema="schema", :model="model", :options="options", :class="vfgClasses")
 </template>
 
 
@@ -44,6 +44,11 @@
       },
     },
 
+    methods: {
+      validate() {
+        this.$refs.vfg.validate();
+      },
+    },
   };
 
 </script>
