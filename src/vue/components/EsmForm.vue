@@ -46,7 +46,7 @@
 
     methods: {
       validate() {
-        this.$refs.vfg.validate();
+        return this.$refs.vfg.validate();
       },
     },
   };
