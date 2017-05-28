@@ -1,10 +1,10 @@
 <template lang="pug">
-  div
+  div.esm-grid
     div.dt-toolbar
       |
     EsmTable(:gridOptions="gridOptions", :columnDefs="columnDefs", :rowData="localRowData")
-
-    div.dt-toolbar-footer.row
+    |
+    div.dt-toolbar-footer.clearfix
       div.col-sm-6.col-xs-12.hidden-xs
         span.dt-data-info
           span(v-text="pageText")
@@ -18,11 +18,16 @@
           li(:class="{disabled: !prevNext.hasNext}")
             a.next(@click.prevent="goNextPage()")
               i.fa.fa-angle-right
+    |
+    .esm-grid-loading(v-if="loading")
+      EsmProgressLinear
+
 </template>
 
 
 <script>
   import EsmTable from './EsmTable.vue';
+  import EsmProgressLinear from './EsmProgressLinear.vue';
   import {buildPages} from 'esm/ui/pagination';
 
   import {StaticDataSource} from '../helpers/table';
@@ -31,10 +36,13 @@
   export default {
     components: {
       EsmTable,
+      EsmProgressLinear,
     },
 
     data() {
       return {
+        loading: true,
+        loadFail: null,
         pageInfo: {
           page: 1,
           rowCount: -1,
@@ -107,6 +115,7 @@
           dataSource.init({
             setRowCount: (count: number) => this.setRowCount(count),
             setRowData: (rowData) => this.setRowData(rowData),
+            onLoadFail: rej => this.onLoadFail(rej),
             getRow: (rowIndex: number) => this.getRowNode(rowIndex),
           });
 
@@ -155,7 +164,12 @@
       loadData() {
         let {start, end, page, pageSize} = this.getPageInfo();
 
-        this.dataSource.setViewportRange(start, end, {start, end, page, pageSize});
+        let opt = {start, end, page, pageSize};
+        console.log('loadData', opt);
+
+        this.loading = true;
+        this.loadFail = null;
+        this.dataSource.setViewportRange(opt);
       },
 
       getPageInfo() {
@@ -180,6 +194,14 @@
 
       setRowData(rowData) {
         this.localRowData = rowData;
+        this.loading = false;
+      },
+
+      onLoadFail(rej) {
+        this.loading = false;
+        this.loadFail = {
+          rej,
+        };
       },
 
       getRowNode(rowIndex) {
@@ -211,23 +233,37 @@
 
 
 <style lang="scss">
-  .dt-data-info {
-    display: inline-block;
-    margin: 18px 0;
-    font-family: 'Roboto', sans-serif;
-  }
+  .esm-grid {
+    position: relative;
 
-  ul.pagination {
-    a.previous,
-    a.next {
-      i {
-        transform: scale(1.5);
+    .dt-data-info {
+      display: inline-block;
+      margin: 18px 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    ul.pagination {
+      a.previous,
+      a.next {
+        i {
+          transform: scale(1.5);
+        }
+      }
+
+      a.active {
+        font-weight: bold;
+        color: black;
       }
     }
-
-    a.active {
-      font-weight: bold;
-      color: black;
-    }
+  }
+  .esm-grid-loading {
+    background: rgba(0, 0, 0, 0.1);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    padding-top: 5px;
   }
 </style>
