@@ -17,11 +17,13 @@ class AsyncDataSource {
     // TODO: destroy
   }
 
-  setViewportRange(first, last, opt) {
-    this.getFn({first, last}, opt)
+  setViewportRange(opt) {
+    this.getFn(opt)
       .then(({meta, data}) => {
         this.params.setRowCount(meta.count);
         this.params.setRowData(data);
+      }, rej => {
+        this.params.onLoadFail(rej);
       });
   }
 
@@ -55,14 +57,16 @@ export class StaticDataSource {
     // TODO: destroy
   }
 
-  setViewportRange(first, last) {
+  setViewportRange(opt) {
+    // TODO: support sort
+
     Vue.nextTick(() => {
       let rows = this.getRows();
-      let data = rows.slice(first, last + 1);
+      let data = rows.slice(opt.start, opt.end + 1);
 
       this.params.setRowCount(rows.length);
       this.params.setRowData(data);
-    })
+    });
   }
 }
 
