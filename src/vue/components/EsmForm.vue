@@ -1,6 +1,29 @@
 <template lang="pug">
-  div
-    VueForm(ref="vfg", :schema="schema", :model="model", :options="options", :class="vfgClasses")
+  div(:class="vfgClasses")
+    fieldset.vue-form-generator(v-if='schema != null')
+      template(v-for='field in fields')
+        component(
+          v-if="fieldVisible(field) && field.specialField",
+          :is='field.component',
+          :disabled='fieldDisabled(field)',
+          :model='model',
+          :schema.sync='field',
+          @model-updated='modelUpdated',
+          @validated="onFieldValidated"
+        )
+        .form-group(v-if='fieldVisible(field) && !field.specialField', :class='getFieldRowClasses(field)')
+          label
+            | {{ field.label }}
+            span.help(v-if='field.help')
+              i.icon
+              .helpText(v-html='field.help')
+          .field-wrap
+            component(:is='getFieldType(field)', :disabled='fieldDisabled(field)', :model='model', :schema.sync='field', @model-updated='modelUpdated', @validated="onFieldValidated")
+            .buttons(v-if='buttonVisibility(field)')
+              button(v-for='btn in field.buttons', @click='btn.onclick(model, field)', :class='btn.classes') {{ btn.label }}
+          .hint(v-if='field.hint') {{ field.hint }}
+          .errors(v-if='fieldErrors(field).length > 0')
+            span(v-for='(error, index) in fieldErrors(field)', track-by='index') {{ error }}
 </template>
 
 
@@ -11,29 +34,27 @@
   import Multiselect from 'vue-multiselect';
 
   require('vue-form-generator/dist/vfg.css');
-  import VueForm from 'vue-form-generator';
-  import vfgComponent from './EsmForm/vfgComponent.vue';
-  import FieldFile from './EsmForm/FieldFile.vue';
+  import vfg from 'vue-form-generator';
+  import fieldComponent from './EsmForm/vfgComponent.vue';
+  import fieldFile from './EsmForm/FieldFile.vue';
 
   Vue.component('Multiselect', Multiselect);
-  /*
-   * { type: 'component', component: xxx }
-   */
-  VueForm.component.components.fieldComponent = vfgComponent;
-  VueForm.component.components.fieldFile = FieldFile;
 
-  export default {
+  const VueForm = vfg.component;
+
+  const EsmForm = {
     components: {
-      VueForm: VueForm.component,
+      ...VueForm.components,
+      fieldComponent, // { type: 'component', component: xxx }
+      fieldFile,
     },
 
-    props: {
-      schema: {},
-      model: {},
-      options: {},
-    },
+    props:  {...VueForm.props},
+    data: VueForm.data,
 
     computed: {
+      ...VueForm.computed,
+
       vfgClasses() {
         /* size 支持
          *   sm - 150px  (default)
@@ -43,14 +64,16 @@
         return this.options.labelAtLeft ? 'label-at-left' : null;
       },
     },
+    watch: {...VueForm.watch},
+    mounted: VueForm.mounted,
 
     methods: {
-      validate() {
-        return this.$refs.vfg.validate();
-      },
+      ...VueForm.methods,
     },
+
   };
 
+  export default EsmForm;
 </script>
 
 
@@ -90,7 +113,7 @@
     }
 
     // 让表单 Label 水平居左
-    .label-at-left > fieldset.vue-form-generator > .form-group {
+    .label-at-left > fieldset.vue-form-generator .form-group {
       padding-left: 150px;
       position: relative;
 
