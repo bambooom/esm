@@ -3,8 +3,9 @@
     div.dt-toolbar
       |
     EsmTable(:gridOptions="gridOptions", :columnDefs="columnDefs", :rowData="localRowData")
+    div.esm-grid-info-box(v-if="pageInfo.rowCount === 0") No Data
     |
-    div.dt-toolbar-footer.clearfix
+    div.dt-toolbar-footer.clearfix(v-if="shouldShowPager")
       div.col-sm-6.col-xs-12.hidden-xs
         span.dt-data-info
           span(v-text="pageText")
@@ -52,15 +53,20 @@
     },
 
     props: {
-      gridOptions: {},
-      columnDefs: {},
-      rowData: {},
-      pagination: {},
+      gridOptions: Object,
+      columnDefs: Array,
+      rowData: Array,
+      pagination: {
+        type: Object,
+        default() {
+          return {};
+        },
+      },
     },
 
     computed: {
       pageSize() {
-        let {pageSize = 20} = this.pagination || {};
+        let {pageSize = 20} = this.pagination;
 
         return pageSize;
       },
@@ -72,6 +78,10 @@
         }
 
         return Math.ceil(rowCount / this.pageSize);
+      },
+      shouldShowPager() {
+        const {forceShowPager = false} = this.pagination;
+        return this.totalPages > 1 || (this.totalPages === 1 && forceShowPager === true);
       },
 
       pageText() {
@@ -256,6 +266,14 @@
       }
     }
   }
+  .esm-grid-info-box {
+    margin-top: -20px;
+    padding: 20px 10px 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-top: 0;
+  }
+
   .esm-grid-loading {
     background: rgba(0, 0, 0, 0.1);
     position: absolute;
