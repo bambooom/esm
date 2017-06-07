@@ -37,9 +37,10 @@
       },
 
       rowNodes() {
-        return this.rowData.map(data => {
+        return this.rowData.map((data, rowIndex) => {
           let rowNode = {
-            data: data,
+            data,
+            rowIndex,
           };
 
           rowNode.cells = this.columns.map(column => {
