@@ -4,6 +4,10 @@
       |
     EsmTable(:gridOptions="gridOptions", :columnDefs="columnDefs", :rowData="localRowData")
     div.esm-grid-info-box(v-if="pageInfo.rowCount === 0") No Data
+    div.esm-grid-info-box(v-if="!loading && loadFail")
+      | Load data fail{{ loadFail.rej && loadFail.rej.msg ? ` (${loadFail.rej.msg})` : '' }}
+      br
+      a.btn.btn-primary.btn-sm(@click.prevent="refresh()") Try again
     |
     div.dt-toolbar-footer.clearfix(v-if="shouldShowPager")
       div.col-sm-6.col-xs-12.hidden-xs
@@ -208,6 +212,9 @@
       },
 
       onLoadFail(rej) {
+        this.localRowData = [];
+        this.pageInfo.rowCount = -1;
+
         this.loading = false;
         this.loadFail = {
           rej,
