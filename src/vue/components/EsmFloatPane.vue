@@ -1,10 +1,10 @@
 <template lang="pug">
-  .esm-float-pane
-    transition-group(name="esm-float-pane-content" tag="div")
-      .esm-float-pane-content(v-for="(pane, index) in panes", :key="pane")
-        component(v-if="pane.component", :is="pane.component", v-bind="getPaneComponentProps(pane)")
-
-        .esm-float-pane-content-tab(:style="getPaneTabStyle(pane, index)", :class="getPaneTabClass(pane, index)")
+  .esm-float-pane-box
+    transition-group(name="esm-float-pane" tag="div")
+      .esm-float-pane(v-for="(pane, index) in panes", :key="pane")
+        .esm-float-pane-content
+          component(v-if="pane.component", :is="pane.component", v-bind="getPaneComponentProps(pane)")
+        .esm-float-pane-tab(:style="getPaneTabStyle(pane, index)", :class="getPaneTabClass(pane, index)")
           div(@click="onClosePane(index)")
 
     transition(name="esm-float-pane-overlay")
@@ -136,7 +136,7 @@
     }
   }
 
-  .esm-float-pane-content {
+  .esm-float-pane {
     position: fixed;
     top: 0;
     right: 0;
@@ -146,47 +146,82 @@
     transition: opacity .2s;
     min-width: 75%;
     width: 907px;
-    padding: 20px;
     box-sizing: border-box;
     background-color: white;
-    overflow-y: auto;
 
     @media (max-width: 950px) {
       min-width: 80%;
       width: 730px;
     }
-
+  }
+  .esm-float-pane-content {
+    position: absolute;
+    z-index: 1005;
+    top: 20px;
+    right: 20px;
+    bottom: 20px;
+    left: 20px;
+    overflow-y: auto;
   }
 
-  .esm-float-pane-content-tab {
+  .esm-float-pane-tab {
     width: 40px;
     height: 58px;
-    background-image: url(../assets/float-pane-tab.png);
-    background-size: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
     position: absolute;
     top: 0;
     left: 0;
-    margin-left: -39px;
+    margin-left: -40px;
     transition: top .2s;
+    perspective: 45px;
+    overflow: hidden;
+
+    &:before {
+      display: block;
+      content: " ";
+      background: #eee;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transform: rotateY(-32deg) scaleY(0.7);
+      border-radius: 10px 0 0 10px;
+      box-shadow: -5px 2px 11px #5f5f5f;
+    }
 
     &.active {
-      background-image: url(../assets/float-pane-tab-active.png);
+      &:before {
+        background: white;
+      }
 
       div {
+        position: absolute;
         width: 100%;
         height: 100%;
-        background-image: url(../assets/float-pane-tab-close.png);
         opacity: 0.2;
-        background-position: 19px 21px;
-        background-repeat: no-repeat;
-        background-size: 16px;
         cursor: pointer;
+        transform: rotateZ(45deg) translate(-1px, -2px);
+
+        &:before {
+          content: " ";
+          display: block;
+          width: 20px;
+          height: 2px;
+          background: black;
+          transform: translate(13px, 28px);
+          overflow: hidden;
+        }
+        &:after {
+          content: " ";
+          display: block;
+          width: 2px;
+          height: 20px;
+          background: black;
+          transform: translate(22px, 17px);
+          overflow: hidden;
+        }
       }
 
       &:hover div {
-        opacity: 1;
+        opacity: 0.6;
       }
     }
   }
@@ -231,11 +266,11 @@
     }
   }
 
-  .esm-float-pane-content-leave-active {
+  .esm-float-pane-leave-active {
     animation: slideOut .3s linear;
   }
 
-  .esm-float-pane-content-enter-active {
+  .esm-float-pane-enter-active {
     animation: slideIn .4s;
   }
 
