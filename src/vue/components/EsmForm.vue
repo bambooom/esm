@@ -110,6 +110,12 @@
           }
         }
       }
+
+      .form-group.field-switch input {
+        &:disabled ~ .label {
+          background: #cecece;
+        }
+      }
     }
 
     // 让表单 Label 水平居左
