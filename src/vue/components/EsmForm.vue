@@ -28,6 +28,7 @@
 
 
 <script>
+  import {each} from "lodash";
   import Vue from 'vue';
 
   require('vue-multiselect/dist/vue-multiselect.min.css');
@@ -69,6 +70,15 @@
 
     methods: {
       ...VueForm.methods,
+
+      // Clear validation errors
+      clearValidationErrors() {
+        this.errors.splice(0);
+
+        each(this.$children, child => {
+          child.clearValidationErrors && child.clearValidationErrors();
+        });
+      },
     },
 
   };
