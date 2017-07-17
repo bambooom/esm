@@ -1,5 +1,5 @@
 <template lang="pug">
-  component(:is='component', :model='model', :schema.sync='schema', @modelUpdated='modelUpdated', @validated="validated")
+  component(:is='component', :model='model', :schema.sync='schema', @model-updated='modelUpdated', @validated="validated")
 </template>
 
 
@@ -20,7 +20,7 @@
 
     methods: {
       modelUpdated(...args) {
-        this.$emit('modelUpdated', ...args);
+        this.$emit('model-updated', ...args);
       },
 
       validated(...args) {
