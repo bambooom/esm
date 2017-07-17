@@ -1,5 +1,7 @@
 <template lang="pug">
   table(width="100%", :class="tableClass")
+    colgroup
+      col(v-for="col in columns", span="1", :style="{width: col.colDef.width}")
     thead
       tr
         th(v-for="col in columns", :class="col.colDef.headerClass")
@@ -22,11 +24,17 @@
       gridOptions: {},
       columnDefs: {},
       rowData: {},
+      customTableClass: {
+        type: String,
+        default: null,
+      },
     },
 
     computed: {
       tableClass() {
-        return 'table table-striped table-bordered table-hover';
+        let classNames = 'table table-striped table-bordered table-hover ';
+        if (this.customTableClass) classNames += this.customTableClass;
+        return classNames;
       },
 
       columns() {
