@@ -3,7 +3,7 @@
     div.dt-toolbar
       |
     EsmTable(:gridOptions="gridOptions", :columnDefs="columnDefs", :rowData="localRowData", :customTableClass="customTableClass")
-    div.esm-grid-info-box(v-if="pageInfo.rowCount === 0") No Data
+    div.esm-grid-info-box(v-if="pageInfo.rowCount === 0") {{ noDataText }}
     div.esm-grid-info-box(v-if="!loading && loadFail")
       | Load data fail{{ loadFail.rej && loadFail.rej.msg ? ` (${loadFail.rej.msg})` : '' }}
       br
@@ -67,6 +67,10 @@
         },
       },
       customTableClass: String,
+      noDataText: {
+        type: String,
+        default: 'No Data',
+      },
     },
 
     computed: {
